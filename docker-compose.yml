@@ -1,0 +1,34 @@
+version: "3"
+
+services:
+  db:
+    image: mysql
+    container_name: my_mysql_container # set the name of the container
+#    ports:
+#      - "3306:3306"
+    expose:
+      - '3306'
+    restart: always
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      retries: 3
+      timeout: 5s
+    environment:
+      MYSQL_DATABASE: BidDB
+      MYSQL_ROOT_PASSWORD: password
+    networks:
+      - my_network
+
+  my_grpc_server:
+    container_name: grpcServer # set the name of the container
+    build: .
+    ports:
+      - "8080:8080"
+    networks:
+      - my_network
+    depends_on:
+      db:
+        condition: service_healthy
+
+networks:
+  my_network:

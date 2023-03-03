@@ -23,7 +23,7 @@ type Bid struct {
 
 func ConnectDB() error {
 	// Connect to the database.
-	dsn := "root:password@tcp(localhost:3306)/BidDB?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := "root:password@tcp(db:3306)/BidDB?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return fmt.Errorf("failed to connect to database: %w", err)

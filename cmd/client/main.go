@@ -17,9 +17,9 @@ func main() {
 	client := pb.NewForwardBidClient(conn)
 
 	response, err := client.PlaceBid(context.Background(), &pb.ForwardBidRequest{
-		UserId:        1,
-		ItemId:        2,
-		Amount:        99.99,
+		UserId:        2,
+		ItemId:        3,
+		Amount:        1000.1,
 		IsTerminating: false,
 	})
 
