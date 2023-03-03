@@ -13,7 +13,7 @@ import (
 var dbConn *gorm.DB
 
 type Bid struct {
-	ID            uint      `gorm:"primary_key"`
+	ID            uint32    `gorm:"primary_key"`
 	UserID        uint32    `gorm:"not null"`
 	ItemID        uint32    `gorm:"not null"`
 	Amount        float64   `gorm:"not null"`

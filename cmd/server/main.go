@@ -10,6 +10,8 @@ import (
 	"github.com/A-Chidalu/forwardbiddingservice/internal/database"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"log"
 	"net"
 )
@@ -20,19 +22,18 @@ type ForwardBidServer struct {
 
 // PlaceBid This is a function the ForwardBidServer implements
 func (s *ForwardBidServer) PlaceBid(ctx context.Context, req *pb.ForwardBidRequest) (*pb.ForwardBidResponse, error) {
-	_, err := database.SaveForwardBid(req)
+	bid, err := database.SaveForwardBid(req)
 
 	if err != nil {
 		log.Fatalf("There was an error in saving the request %v with error %v", req, err)
+		return nil, status.Errorf(codes.Internal, fmt.Sprintf("Could not place bid. Reason: %v", err))
 	}
 
-	return &pb.ForwardBidResponse{Success: true}, nil
+	response := &pb.ForwardBidResponse{BidId: bid.ID}
+
+	return response, nil
 
 }
-
-const (
-	port = "8001"
-)
 
 func main() {
 

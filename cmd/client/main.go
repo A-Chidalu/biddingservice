@@ -23,7 +23,7 @@ func main() {
 		IsTerminating: false,
 	})
 
-	log.Printf("The response is %v", response)
+	log.Printf("The response is %v", response.BidId)
 
 	defer conn.Close()
 
