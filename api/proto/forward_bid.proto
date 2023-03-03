@@ -15,7 +15,7 @@ message ForwardBidRequest {
 }
 
 message ForwardBidResponse {
-  bool success = 1;
+  uint32 bid_id= 1;
 }
 
 service ForwardBid {
