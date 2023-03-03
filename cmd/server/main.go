@@ -4,54 +4,53 @@ package main
 // This will start and run continiously
 
 import (
+	"flag"
 	"fmt"
 	pb "github.com/A-Chidalu/forwardbiddingservice/api/proto"
 	"github.com/A-Chidalu/forwardbiddingservice/internal/database"
 	"golang.org/x/net/context"
+	"google.golang.org/grpc"
+	"log"
+	"net"
 )
 
 type ForwardBidServer struct {
 	pb.UnimplementedForwardBidServer
 }
 
-func (s *ForwardBidServer) PlaceBid(ctx context.Context, req *pb.ForwardBidRequest) {
+// PlaceBid This is a function the ForwardBidServer implements
+func (s *ForwardBidServer) PlaceBid(ctx context.Context, req *pb.ForwardBidRequest) (*pb.ForwardBidResponse, error) {
+	_, err := database.SaveForwardBid(req)
+
+	if err != nil {
+		log.Fatalf("There was an error in saving the request %v with error %v", req, err)
+	}
+
+	return &pb.ForwardBidResponse{Success: true}, nil
 
 }
+
+const (
+	port = "8001"
+)
 
 func main() {
 
 	//Open a connection to the database
 	err := database.ConnectDB()
-
 	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println("Connected to the dbConn successfully!!")
-
-		request := pb.ForwardBidRequest{
-			UserId:        1,
-			ItemId:        2,
-			Amount:        78.0,
-			IsTerminating: false,
-		}
-
-		bid, err := database.SaveForwardBid(&request)
-		if err != nil {
-			fmt.Println("THERE WAS AN ERROR", err)
-		} else {
-			fmt.Println("The new bid that was created is ", bid.ID)
-		}
-
-		bids, err := database.GetAllBids()
-
-		if err != nil {
-			fmt.Println("THERE WAS AN ERROR", err)
-		} else {
-			for _, bid := range bids {
-				fmt.Printf("Bid with amount %g \n", bid.Amount)
-			}
-		}
+		panic("Could not connect to the database")
 	}
+
+	flag.Parse()
+	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:8080"))
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	var opts []grpc.ServerOption
+	grpcServer := grpc.NewServer(opts...)
+	pb.RegisterForwardBidServer(grpcServer, &ForwardBidServer{})
+	grpcServer.Serve(lis)
 
 	defer database.CloseDB()
 
