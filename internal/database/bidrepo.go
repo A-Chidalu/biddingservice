@@ -2,7 +2,7 @@ package database
 
 import (
 	"fmt"
-	pb "github.com/A-Chidalu/forwardbiddingservice/api/proto"
+	pb "github.com/A-Chidalu/biddingservice/api/proto"
 	"log"
 	"time"
 
@@ -12,10 +12,18 @@ import (
 
 var dbConn *gorm.DB
 
+type BidType string
+
+const (
+	BidTypeForward BidType = "FORWARD"
+	BidTypeDutch   BidType = "DUTCH"
+)
+
 type Bid struct {
 	ID            uint32    `gorm:"primary_key"`
 	UserID        uint32    `gorm:"not null"`
 	ItemID        uint32    `gorm:"not null"`
+	BidType       BidType   `gorm:"not null;default:FORWARD"`
 	Amount        float64   `gorm:"not null"`
 	Timestamp     time.Time `gorm:"autoCreateTime"`
 	IsTerminating bool      `gorm:"not null;default:false"`
@@ -67,12 +75,14 @@ func CloseDB() error {
 	return nil
 }
 
-func SaveForwardBid(request *pb.ForwardBidRequest) (*Bid, error) {
+func SaveBid(request *pb.BidRequest) (*Bid, error) {
+	log.Printf("Recieved Bid Reuqust: %v", request)
 
 	bid := Bid{
 		UserID:        request.UserId,
 		ItemID:        request.ItemId,
 		Amount:        request.Amount,
+		BidType:       BidType(request.BidType),
 		Timestamp:     time.Now(),
 		IsTerminating: request.IsTerminating,
 	}

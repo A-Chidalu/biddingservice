@@ -1,4 +1,4 @@
-module github.com/A-Chidalu/forwardbiddingservice
+module github.com/A-Chidalu/biddingservice
 
 go 1.17
 

@@ -1,4 +1,4 @@
-# ForwardBiddingService
+# BiddingService
 
 * This service is an example microservice that allows one to make gRPC requests to save Bids to a database. 
 

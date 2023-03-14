@@ -1,13 +1,13 @@
 package main
 
-// The entry point to the ForwardBidServer.
+// The entry point to the  BidServer.
 // This will start and run continiously
 
 import (
 	"flag"
 	"fmt"
-	pb "github.com/A-Chidalu/forwardbiddingservice/api/proto"
-	"github.com/A-Chidalu/forwardbiddingservice/internal/database"
+	pb "github.com/A-Chidalu/biddingservice/api/proto"
+	"github.com/A-Chidalu/biddingservice/internal/database"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -16,20 +16,20 @@ import (
 	"net"
 )
 
-type ForwardBidServer struct {
-	pb.UnimplementedForwardBidServer
+type BidServer struct {
+	pb.UnimplementedBidServer
 }
 
-// PlaceBid This is a function the ForwardBidServer implements
-func (s *ForwardBidServer) PlaceBid(ctx context.Context, req *pb.ForwardBidRequest) (*pb.ForwardBidResponse, error) {
-	bid, err := database.SaveForwardBid(req)
+// PlaceBid This is a function the BidServer implements
+func (s *BidServer) PlaceBid(ctx context.Context, req *pb.BidRequest) (*pb.BidResponse, error) {
+	bid, err := database.SaveBid(req)
 
 	if err != nil {
 		log.Fatalf("There was an error in saving the request %v with error %v", req, err)
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("Could not place bid. Reason: %v", err))
 	}
 
-	response := &pb.ForwardBidResponse{BidId: bid.ID}
+	response := &pb.BidResponse{BidId: bid.ID}
 
 	return response, nil
 
@@ -50,7 +50,7 @@ func main() {
 	}
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
-	pb.RegisterForwardBidServer(grpcServer, &ForwardBidServer{})
+	pb.RegisterBidServer(grpcServer, &BidServer{})
 	grpcServer.Serve(lis)
 
 	defer database.CloseDB()
