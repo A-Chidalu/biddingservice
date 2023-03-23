@@ -11,9 +11,9 @@ message BidRequest {
   uint32 user_id = 1;
   string item_id = 2;
   double amount = 3;
-  bool is_terminating = 4;
   BID_TYPE bid_type = 5;
 }
+
 
 message BidResponse {
   uint32 bid_id= 1;
@@ -24,6 +24,17 @@ enum BID_TYPE {
   DUTCH = 1;
 }
 
+message BidWinnerRequest {
+  string item_id = 1;
+}
+
+message BidWinnerResponse {
+  string item_id = 1;
+  uint32 user_id = 2;
+}
+
+
 service Bid {
   rpc PlaceBid(BidRequest) returns (BidResponse);
+  rpc GetWinningBidder(BidWinnerRequest) returns (BidWinnerResponse);
 }

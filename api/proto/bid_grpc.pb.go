@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BidClient interface {
 	PlaceBid(ctx context.Context, in *BidRequest, opts ...grpc.CallOption) (*BidResponse, error)
+	GetWinningBidder(ctx context.Context, in *BidWinnerRequest, opts ...grpc.CallOption) (*BidWinnerResponse, error)
 }
 
 type bidClient struct {
@@ -42,11 +43,21 @@ func (c *bidClient) PlaceBid(ctx context.Context, in *BidRequest, opts ...grpc.C
 	return out, nil
 }
 
+func (c *bidClient) GetWinningBidder(ctx context.Context, in *BidWinnerRequest, opts ...grpc.CallOption) (*BidWinnerResponse, error) {
+	out := new(BidWinnerResponse)
+	err := c.cc.Invoke(ctx, "/proto.Bid/GetWinningBidder", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BidServer is the server API for Bid service.
 // All implementations must embed UnimplementedBidServer
 // for forward compatibility
 type BidServer interface {
 	PlaceBid(context.Context, *BidRequest) (*BidResponse, error)
+	GetWinningBidder(context.Context, *BidWinnerRequest) (*BidWinnerResponse, error)
 	mustEmbedUnimplementedBidServer()
 }
 
@@ -56,6 +67,9 @@ type UnimplementedBidServer struct {
 
 func (UnimplementedBidServer) PlaceBid(context.Context, *BidRequest) (*BidResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PlaceBid not implemented")
+}
+func (UnimplementedBidServer) GetWinningBidder(context.Context, *BidWinnerRequest) (*BidWinnerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetWinningBidder not implemented")
 }
 func (UnimplementedBidServer) mustEmbedUnimplementedBidServer() {}
 
@@ -88,6 +102,24 @@ func _Bid_PlaceBid_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Bid_GetWinningBidder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BidWinnerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BidServer).GetWinningBidder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.Bid/GetWinningBidder",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BidServer).GetWinningBidder(ctx, req.(*BidWinnerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Bid_ServiceDesc is the grpc.ServiceDesc for Bid service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -98,6 +130,10 @@ var Bid_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PlaceBid",
 			Handler:    _Bid_PlaceBid_Handler,
+		},
+		{
+			MethodName: "GetWinningBidder",
+			Handler:    _Bid_GetWinningBidder_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

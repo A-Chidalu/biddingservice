@@ -20,13 +20,12 @@ const (
 )
 
 type Bid struct {
-	ID            uint32    `gorm:"primary_key"`
-	UserID        uint32    `gorm:"not null"`
-	ItemID        string    `gorm:"not null"`
-	BidType       BidType   `gorm:"not null;default:FORWARD"`
-	Amount        float64   `gorm:"not null"`
-	Timestamp     time.Time `gorm:"autoCreateTime"`
-	IsTerminating bool      `gorm:"not null;default:false"`
+	ID        uint32    `gorm:"primary_key"`
+	UserID    uint32    `gorm:"not null"`
+	ItemID    string    `gorm:"not null"`
+	BidType   BidType   `gorm:"not null;default:FORWARD"`
+	Amount    float64   `gorm:"not null"`
+	Timestamp time.Time `gorm:"autoCreateTime"`
 }
 
 func ConnectDB() error {
@@ -79,12 +78,11 @@ func SaveBid(request *pb.BidRequest) (*Bid, error) {
 	log.Printf("Recieved Bid Reuqust: %v", request)
 
 	bid := Bid{
-		UserID:        request.UserId,
-		ItemID:        request.ItemId,
-		Amount:        request.Amount,
-		BidType:       BidType(request.BidType),
-		Timestamp:     time.Now(),
-		IsTerminating: request.IsTerminating,
+		UserID:    request.UserId,
+		ItemID:    request.ItemId,
+		Amount:    request.Amount,
+		BidType:   BidType(request.BidType),
+		Timestamp: time.Now(),
 	}
 
 	result := dbConn.Create(&bid) //create a record in the database
@@ -103,6 +101,16 @@ func GetAllBids() ([]Bid, error) {
 		return nil, fmt.Errorf("failed to get all bids: %v", result.Error)
 	}
 	return bids, nil
+}
+
+func GetLatestBidForItem(itemId string) (*Bid, error) {
+	var bid *Bid
+
+	result := dbConn.Where("item_id = ?", itemId).Last(&bid)
+	if result.Error != nil {
+		return nil, fmt.Errorf("failed to get latest bid for item_id: %s", itemId)
+	}
+	return bid, nil
 }
 
 func GetBidById(id uint) (*Bid, error) {
