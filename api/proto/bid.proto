@@ -5,11 +5,11 @@ package proto;
 option go_package = ".";
 
 
-// $ protoc --go_out=. --go-grpc_out=. forward_bid.proto
+// $ protoc --go_out=. --go-grpc_out=. bid.proto
 
 message BidRequest {
   uint32 user_id = 1;
-  uint32 item_id = 2;
+  string item_id = 2;
   double amount = 3;
   bool is_terminating = 4;
   BID_TYPE bid_type = 5;

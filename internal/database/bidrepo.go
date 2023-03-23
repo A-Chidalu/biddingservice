@@ -22,7 +22,7 @@ const (
 type Bid struct {
 	ID            uint32    `gorm:"primary_key"`
 	UserID        uint32    `gorm:"not null"`
-	ItemID        uint32    `gorm:"not null"`
+	ItemID        string    `gorm:"not null"`
 	BidType       BidType   `gorm:"not null;default:FORWARD"`
 	Amount        float64   `gorm:"not null"`
 	Timestamp     time.Time `gorm:"autoCreateTime"`

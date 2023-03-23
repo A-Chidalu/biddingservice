@@ -18,7 +18,7 @@ func main() {
 
 	response, err := client.PlaceBid(context.Background(), &pb.BidRequest{
 		UserId:        2,
-		ItemId:        5,
+		ItemId:        "89487gbiuaybs1872g817r",
 		Amount:        20201,
 		IsTerminating: false,
 		BidType:       pb.BID_TYPE_FORWARD,
