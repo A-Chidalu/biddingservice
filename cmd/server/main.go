@@ -39,8 +39,8 @@ func (s *BidServer) GetWinningBidder(ctx context.Context, req *pb.BidWinnerReque
 	bid, err := database.GetLatestBidForItem(req.GetItemId())
 
 	if err != nil {
-		log.Fatalf("There was an error getting the winning bidder for the request: %v %v", req, err)
-		return nil, status.Errorf(codes.Internal, fmt.Sprintf("Could not get bid winner. Reason: %v", err))
+		log.Printf("There was an error getting the winning bidder for the request: %v %v", req, err)
+		return nil, status.Errorf(codes.NotFound, fmt.Sprintf("Could not get bid winner. Reason: %v", err))
 	}
 
 	response := &pb.BidWinnerResponse{UserId: bid.UserID, ItemId: bid.ItemID}
