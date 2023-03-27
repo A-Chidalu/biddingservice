@@ -23,7 +23,7 @@ services:
     container_name: grpcServer # set the name of the container
     build: .
     ports:
-      - "5003:8080"
+      - "5003:5003"
     networks:
       - my_network
     depends_on:

@@ -58,7 +58,7 @@ func main() {
 	}
 
 	flag.Parse()
-	lis, err := net.Listen("tcp", fmt.Sprintf("grpcServer:8080"))
+	lis, err := net.Listen("tcp", fmt.Sprintf("grpcServer:5003"))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
